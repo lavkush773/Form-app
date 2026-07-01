@@ -8,12 +8,7 @@ env/
 venv/
 .venv/
 
-# Flask local database
 instance/
-**/instance/
-
-# User uploaded files (PDFs, Images, etc.)
 uploads/*
-# Lekin uploads folder ka structure save rakhne ke liye sirf .gitkeep ko allow karein
 !uploads/.gitkeep
 
