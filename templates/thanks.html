@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success!</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>body { background: #0f172a; height: 100vh; display: flex; align-items: center; justify-content: center; }</style>
+</head>
+<body>
+    <script>
+        Swal.fire({
+            icon: 'success', title: 'Application Submitted!',
+            html: 'Your details have been securely saved.<br><br><div style="background:#f1f5f9; padding:15px; border-radius:10px; color:#0f172a; font-size:1.1rem;">Your Application ID is: <b>#{{ app_id }}</b></div><br><small style="color:#64748b;">Please save this ID to track your status on our portal.</small>',
+            confirmButtonText: 'Return Home', confirmButtonColor: '#4f46e5', allowOutsideClick: false
+        }).then(() => { window.location.href = "/"; });
+    </script>
+</body>
+</html>

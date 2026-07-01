@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --bg-main: #f8fafc; --bg-section: #ffffff; --text-main: #475569; --text-heading: #0f172a; --card-bg: rgba(255, 255, 255, 0.95); --solid-card: #ffffff; --input-bg: #f8fafc; --input-border: #e2e8f0; --primary: #4f46e5; }
+        body.dark-mode { --bg-main: #0f172a; --bg-section: #1e293b; --text-main: #cbd5e1; --text-heading: #f8fafc; --card-bg: rgba(30, 41, 59, 0.95); --solid-card: #0f172a; --input-bg: #1e293b; --input-border: #334155; }
+        html { scroll-behavior: smooth; } body { font-family: 'Inter', sans-serif; color: var(--text-main); background-color: var(--bg-main); margin: 0; transition: 0.3s; }
+        h1, h2, h3, h4, h5, h6 { color: var(--text-heading); transition: 0.3s;}
+        
+        .navbar { transition: all 0.4s ease; padding: 15px 0; z-index: 1000; } .navbar.scrolled { background: rgba(15, 23, 42, 0.95) !important; backdrop-filter: blur(10px); padding: 10px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .navbar-brand { font-weight: 800; color: white !important;} .nav-link { font-weight: 500; color: rgba(255,255,255,0.8) !important;} .nav-link:hover { color: #818cf8 !important; }
+        
+        #home { min-height: 100vh; background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover fixed; display: flex; align-items: center; padding-top: 80px; }
+        .glass-card { background: var(--card-bg); border-radius: 20px; padding: 40px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-primary-custom { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; border: none; padding: 14px 35px; border-radius: 50px; font-weight: 600; text-decoration: none; }
+        
+        #form-content { display: none; }
+        .progress { height: 6px; border-radius: 10px; margin-bottom: 30px; background-color: var(--input-border); } .progress-bar { background: linear-gradient(90deg, #4f46e5, #06b6d4); }
+        .step { display: none; } .step.active { display: block; }
+        .form-control, .form-select { border-radius: 12px; padding: 12px; border: 2px solid var(--input-border); background: var(--input-bg); color: var(--text-heading); transition: 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: var(--primary); background: var(--input-bg); color: var(--text-heading); box-shadow: none; }
+        .btn-group-custom { display: flex; gap: 15px; margin-top: 25px; } .btn-next, .btn-submit { background: var(--text-heading); color: var(--bg-main); padding: 12px; border-radius: 12px; font-weight: 600; flex: 1; border: none; }
+        .btn-prev { background: transparent; border: 2px solid var(--input-border); color: var(--text-main); padding: 12px; border-radius: 12px; font-weight: 600; width: 100px; }
+        .icon-box { width: 50px; height: 50px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px; }
+        
+        .theme-toggle { position: fixed; bottom: 30px; left: 30px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);}
+        
+        /* 🔔 CUSTOM NOTIFICATION POPUP CSS 🔔 */
+        #custom-toast {
+            position: fixed;
+            top: -150px; /* Hidden initially */
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            z-index: 999999; /* Highest priority */
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Bouncy animation */
+            width: 320px;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="100" tabindex="0">
+    
+    <!-- 🔔 THE CUSTOM OTP NOTIFICATION BOX 🔔 -->
+    <div id="custom-toast">
+        <div style="background:#e0e7ff; color:#4f46e5; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">
+            <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <div>
+            <h6 style="margin:0; font-weight:700; color:var(--text-heading); font-size:1rem;">New Message</h6>
+            <p style="margin:0; color:var(--text-main); font-size:0.9rem; margin-top:2px;">Your TechCorp OTP is:<br>
+            <b id="toast-otp-val" style="color:#4f46e5; font-size:1.4rem; letter-spacing: 2px;"></b></p>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="theme-icon"></i></button>
+
+    <nav id="mainNav" class="navbar navbar-expand-lg fixed-top bg-transparent">
+        <div class="container">
+            <a class="navbar-brand" href="#home"><i class="fas fa-layer-group text-primary me-2"></i>TechCorp</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><i class="fas fa-bars text-white"></i></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link text-warning fw-bold" href="#" onclick="openTracker(event)"><i class="fas fa-search me-1"></i>Track Status</a></li>
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0"><a class="btn btn-primary-custom px-4 py-2" href="#home" onclick="openForm(event)">Apply Now</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="glass-card">
+                        <div id="landing-content" class="text-center">
+                            <div class="mb-4 text-primary" style="font-size: 3rem;"><i class="fa-solid fa-rocket"></i></div>
+                            <h1 style="font-weight: 800;">Shape Your Future</h1>
+                            <p style="font-size: 1.1rem; margin-bottom: 30px;">Join our elite team. Fill out the application form today.</p>
+                            <button class="btn-primary-custom" onclick="openForm(event)">Start Application <i class="fas fa-arrow-right ms-2"></i></button>
+                        </div>
+                        <div id="form-content">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 style="font-weight: 700; margin: 0;">Application Form</h4>
+                                <button type="button" class="btn-close" aria-label="Close" onclick="closeForm()" style="filter: var(--text-heading) == '#f8fafc' ? 'invert(1)' : 'none';"></button>
+                            </div>
+                            <div class="progress"><div class="progress-bar" id="progressBar" style="width: 12.5%;"></div></div>
+                            <form id="regForm" method="POST" action="/" enctype="multipart/form-data" onsubmit="showLoading()">
+                                <div class="step active">
+                                    <div class="icon-box"><i class="fas fa-user"></i></div><h2>Personal Details</h2>
+                                    <select name="job_role" class="form-select mb-3" required>
+                                        <option value="" disabled selected>Select Job Role</option>
+                                        {% for r in roles %}
+                                        <option value="{{ r.name }}">{{ r.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                                    <div class="btn-group-custom"><button type="button" class="btn btn-next w-100">Continue <i class="fas fa-arrow-right ms-1"></i></button></div>
+                                </div>
+                                <div class="step">
+                                    <div class="icon-box"><i class="fas fa-envelope"></i></div><h2>Email Verification</h2>
+                                    <div class="input-group mb-2">
+                                        <input type="email" id="emailInput" name="email" class="form-control" placeholder="Email Address" required>
+                                        <button class="btn" style="background: var(--primary); color: white;" type="button" onclick="sendOTP()">Verify</button>
+                                    </div>
+                                    <small class="text-danger d-none" id="otpError">Please verify your email!</small>
+                                    <div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div>
+                                </div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-phone"></i></div><h2>Phone Number</h2><input type="text" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX" required><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div></div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-graduation-cap"></i></div><h2>Education</h2><input type="text" name="education" class="form-control" placeholder="Degree / University" required><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div></div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-map-marker-alt"></i></div><h2>Address</h2><textarea name="address" class="form-control" rows="2" placeholder="City, State" required></textarea><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div></div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-laptop-code"></i></div><h2>Core Skills</h2><input type="text" name="skills" class="form-control" placeholder="Python, React, etc." required><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div></div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-building"></i></div><h2>Experience</h2><input type="text" name="experience" class="form-control" placeholder="Years of Experience" required><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="button" class="btn btn-next">Continue</button></div></div>
+                                <div class="step"><div class="icon-box"><i class="fas fa-file-upload"></i></div><h2>Final Step: Resume</h2><input type="file" name="resume" class="form-control mb-3" accept=".pdf,.doc,.docx" required><textarea name="bio" class="form-control" rows="2" placeholder="Short Bio..." required></textarea><div class="btn-group-custom"><button type="button" class="btn btn-prev">Back</button><button type="submit" class="btn btn-submit">Submit Application <i class="fas fa-check ms-1"></i></button></div></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" style="padding: 100px 0; background-color: var(--bg-section); transition: 0.3s;">
+        <div class="container">
+            <h2 class="text-center" style="font-weight: 800; margin-bottom: 15px;">About Our Company</h2>
+            <div style="width: 60px; height: 4px; background: var(--primary); margin: 0 auto 50px auto; border-radius: 2px;"></div>
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0 pe-lg-5">
+                    <h3 style="font-weight: 700; margin-bottom: 20px;">Innovating the Future of Technology</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 30px;">We are a leading tech company dedicated to building scalable solutions for global enterprises. Our mission is to empower businesses with cutting-edge software and create a workplace where talent thrives.</p>
+                </div>
+                <div class="col-lg-6"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="About Us" class="img-fluid" style="border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" style="padding: 100px 0; background-color: var(--bg-main); transition: 0.3s;">
+        <div class="container">
+            <h2 class="text-center" style="font-weight: 800; margin-bottom: 15px;">Get In Touch</h2>
+            <div style="width: 60px; height: 4px; background: var(--primary); margin: 0 auto 50px auto; border-radius: 2px;"></div>
+            <div class="row">
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div style="background: var(--solid-card); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: 100%; border: 1px solid var(--input-border); transition: 0.3s;">
+                        <h3 style="font-weight: 700; margin-bottom: 30px;">Contact Information</h3>
+                        <p>Email: hr@techcorp.com<br>Phone: +91 98765 43210</p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div style="background: var(--solid-card); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); height: 100%; border: 1px solid var(--input-border); transition: 0.3s;">
+                        <h3 style="font-weight: 700; margin-bottom: 30px;">Send Us a Message</h3>
+                        <form>
+                            <div class="row"><div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Your Name"></div><div class="col-md-6 mb-3"><input type="email" class="form-control" placeholder="Email Address"></div></div>
+                            <div class="mb-3"><input type="text" class="form-control" placeholder="Subject"></div>
+                            <div class="mb-4"><textarea class="form-control" rows="4" placeholder="Write your message here..."></textarea></div>
+                            <button type="button" class="btn w-100" style="background: var(--primary); color: white; padding: 12px; border-radius: 12px; font-weight: 600;" onclick="Swal.fire('Success!', 'Message received. We will get back to you soon.', 'success')">Send Message <i class="fas fa-paper-plane ms-2"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="background: #0f172a; color: white; padding: 30px 0; text-align: center; font-size: 0.9rem;">
+        <div class="container"><p class="mb-0">&copy; 2024 TechCorp Solutions. All Rights Reserved. | <a href="/login" class="text-white text-decoration-none opacity-50"><i class="fas fa-lock"></i> Admin Login</a></p></div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) navbar.classList.add('scrolled', 'bg-dark');
+            else navbar.classList.remove('scrolled', 'bg-dark');
+        });
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('theme-icon');
+            icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+        }
+
+        function openForm(e) { if(e) e.preventDefault(); document.getElementById('landing-content').style.display = 'none'; document.getElementById('form-content').style.display = 'block'; }
+        function closeForm() { document.getElementById('form-content').style.display = 'none'; document.getElementById('landing-content').style.display = 'block'; }
+
+        const steps = document.querySelectorAll(".step");
+        let currentStep = 0;
+        document.querySelectorAll(".btn-next").forEach(btn => {
+            btn.addEventListener("click", () => {
+                if(currentStep === 1 && !isEmailVerified) { document.getElementById('otpError').classList.remove('d-none'); return; }
+                let inputs = steps[currentStep].querySelectorAll("input:not([type='file']), textarea, select");
+                let isValid = true;
+                inputs.forEach(input => {
+                    if(!input.value.trim()) { input.style.borderColor = "#ef4444"; isValid = false; } 
+                    else { input.style.borderColor = "var(--input-border)"; }
+                });
+                if(!isValid) return;
+                steps[currentStep].classList.remove("active"); currentStep++; steps[currentStep].classList.add("active");
+                document.getElementById("progressBar").style.width = ((currentStep + 1) / steps.length) * 100 + "%";
+            });
+        });
+
+        document.querySelectorAll(".btn-prev").forEach(btn => {
+            btn.addEventListener("click", () => {
+                steps[currentStep].classList.remove("active"); currentStep--; steps[currentStep].classList.add("active");
+                document.getElementById("progressBar").style.width = ((currentStep + 1) / steps.length) * 100 + "%";
+            });
+        });
+
+        function showLoading() { Swal.fire({ title: 'Uploading...', allowOutsideClick: false, didOpen: () => Swal.showLoading() }); }
+
+        // --- 🔔 CUSTOM OTP NOTIFICATION AND VERIFICATION LOGIC 🔔 ---
+        let isEmailVerified = false;
+        function sendOTP() {
+            let email = document.getElementById('emailInput').value;
+            if(!email) return Swal.fire('Wait!', 'Enter email first.', 'warning');
+            
+            Swal.fire({title: 'Generating OTP...', didOpen: () => Swal.showLoading()});
+            
+            fetch('/api/send_otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: email}) })
+            .then(r => r.json()).then(data => {
+                
+                // 1. Show the Custom Notification smoothly!
+                document.getElementById('toast-otp-val').innerText = data.otp;
+                let toast = document.getElementById('custom-toast');
+                toast.style.top = '30px'; // Slide In
+                
+                // Auto hide after 12 seconds
+                let hideTimer = setTimeout(() => { toast.style.top = '-150px'; }, 12000); 
+
+                // 2. Show the input popup
+                Swal.fire({
+                    title: 'Verify Email', 
+                    input: 'text', 
+                    inputLabel: 'Look at the notification at the Top Right corner!', 
+                    showCancelButton: true, 
+                    confirmButtonText: 'Verify OTP',
+                    confirmButtonColor: '#4f46e5',
+                    preConfirm: (otp) => {
+                        return fetch('/api/verify_otp', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: email, otp: otp}) })
+                        .then(r => r.json()).then(res => { if(!res.success) throw new Error(); return res; })
+                        .catch(() => Swal.showValidationMessage('Invalid OTP! Please try again.'));
+                    }
+                }).then((res) => {
+                    if(res.isConfirmed) { 
+                        Swal.fire('Verified!', 'Email has been verified successfully.', 'success'); 
+                        isEmailVerified = true; 
+                        document.getElementById('otpError').classList.add('d-none'); 
+                        document.getElementById('emailInput').readOnly = true; 
+                        
+                        // Hide notification immediately upon success
+                        toast.style.top = '-150px';
+                        clearTimeout(hideTimer);
+                    } else {
+                        // User cancelled
+                        toast.style.top = '-150px';
+                    }
+                });
+            });
+        }
+
+        async function openTracker(event) {
+            if(event) event.preventDefault();
+            const { value: formValues } = await Swal.fire({
+                title: 'Track Status',
+                html: '<input id="swal-input1" class="swal2-input" placeholder="Application ID (e.g., 1)" type="number"><input id="swal-input2" class="swal2-input" placeholder="Registered Email" type="email">',
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Check Status', confirmButtonColor: '#4f46e5',
+                preConfirm: () =>[document.getElementById('swal-input1').value, document.getElementById('swal-input2').value]
+            });
+
+            if (formValues) {
+                const[app_id, email] = formValues;
+                if(!app_id || !email) return Swal.fire('Error', 'Please enter both details', 'error');
+                Swal.fire({title: 'Fetching...', didOpen: () => Swal.showLoading()});
+                
+                fetch('/api/track', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({app_id: app_id, email: email}) })
+                .then(res => res.json()).then(data => {
+                    if(data.success) {
+                        let color = data.status === 'Pending' ? '#f59e0b' : (data.status === 'Shortlisted' ? '#10b981' : '#ef4444');
+                        let html = `Hello <b>${data.name}</b>,<br>Role: ${data.role}<br><br>Status: <strong style="color:${color}; font-size:1.2rem;">${data.status}</strong>.`;
+                        
+                        if(data.status === 'Shortlisted') {
+                            let locHtml = '';
+                            if (data.i_type === 'Online') { locHtml = `🔗 <b>Link:</b> <a href="${data.loc}" target="_blank">Join Meeting</a>`; } 
+                            else { let mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.loc)}`; locHtml = `🏢 <b>Address:</b> ${data.loc}<br><a href="${mapUrl}" target="_blank" class="btn btn-sm text-white mt-2 w-100" style="background:var(--primary);"><i class="fas fa-map-marker-alt"></i> View on Google Maps</a>`; }
+                            html += `<br><br><div style="background:#f1f5f9; padding:15px; border-radius:10px; color:#0f172a; text-align:left;">📅 <b>Date:</b> ${data.date}<br>⏰ <b>Time:</b> ${data.time}<br><br>${locHtml}</div>`;
+                        }
+                        Swal.fire({ icon: data.status === 'Pending' ? 'info' : (data.status === 'Shortlisted' ? 'success' : 'error'), title: `Application Status`, html: html });
+                    } else { Swal.fire('Not Found', data.message, 'error'); }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
